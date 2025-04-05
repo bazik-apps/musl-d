@@ -1,8 +1,2 @@
-*.o
-*.lo
-*.a
-*.so
-*.so.1
-config.mak
-lib/musl-gcc.specs
-/obj/
+upstream
+builddir
