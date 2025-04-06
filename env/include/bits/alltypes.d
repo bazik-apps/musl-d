@@ -70,6 +70,7 @@ alias int16_t = short;
 alias int32_t = int;
 alias int64_t = long;
 alias intmax_t = long;
+
 alias uint8_t = ubyte;
 alias uint16_t = ushort;
 alias uint32_t = uint;
@@ -77,35 +78,32 @@ alias uint64_t = ulong;
 alias u_int64_t = ulong;
 alias uintmax_t = ulong;
 
-static if (!__traits(compiles, { float_t f__; })) {
-	alias float_t = float;
-}
-alias double_t = double;
-
 alias mode_t = uint;
-static if (!__traits(compiles, { nlink_t n__; })) {
+static if (!__traits(compiles, { nlink_t nlink_v; })) {
 	alias nlink_t = size_t;
 }
 alias off_t = long;
 alias ino_t = ulong;
 alias dev_t = ulong;
 
-static if (!__traits(compiles, { blksize_t b__; })) {
+static if (!__traits(compiles, { blksize_t blksize_v; })) {
 	alias blksize_t = ptrdiff_t;
 }
 alias blkcnt_t = long;
 alias fsblkcnt_t = ulong;
 alias fsfilcnt_t = ulong;
 
-static if (!__traits(compiles, { wchar_t w__; })) {
+static if (!__traits(compiles, { wchar_t wchar_v; })) {
 	alias wchar_t = dchar;
 }
-alias wint_t = uint;
-alias wctype_t = ulong;
+static if (!__traits(compiles, { wint_t wint_v; })) {
+	alias wint_t = dchar;
+}
+alias wctype_t = size_t;
 
 alias timer_t = void*;
 alias clockid_t = int;
-alias clock_t = long;
+alias clock_t = ptrdiff_t;
 
 struct timeval {
 	time_t tv_sec;
@@ -126,7 +124,6 @@ alias useconds_t = uint;
 
 struct __pthread;
 alias pthread_t = __pthread*;
-
 alias pthread_once_t = int;
 alias pthread_key_t = uint;
 alias pthread_spinlock_t = int;
@@ -154,14 +151,15 @@ alias va_list = __builtin_va_list;
 alias __isoc_va_list = __builtin_va_list;
 
 struct mbstate_t {
-	uint __opaque1, __opaque2;
+	uint __opaque1;
+	uint __opaque2;
 }
 
 struct __locale_struct;
 alias locale_t = __locale_struct*;
 
 struct sigset_t {
-	ulong[long.sizeof] __bits;
+	size_t[128 / ptrdiff_t.sizeof] __bits;
 }
 
 struct iovec {
@@ -170,7 +168,10 @@ struct iovec {
 }
 
 struct winsize {
-	ushort ws_row, ws_col, ws_xpixel, ws_ypixel;
+	ushort ws_row;
+	ushort ws_col;
+	ushort ws_xpixel;
+	ushort ws_ypixel;
 }
 
 alias socklen_t = uint;
@@ -178,17 +179,17 @@ alias sa_family_t = ushort;
 
 struct pthread_attr_t {
 	union __u {
-		int[14] __i;
-		shared int[14] __vi;
-		ulong[7] __s;
+		int[ptrdiff_t.sizeof == 8 ? 14: 9] __i;
+		shared int[ptrdiff_t.sizeof == 8 ? 14: 9] __vi;
+		ulong[ptrdiff_t.sizeof == 8 ? 7: 9] __s;
 	}
 }
 
 struct pthread_mutex_t {
 	union __u {
-		int[10] __i;
-		shared int[10] __vi;
-		shared pthread_t[5] __p;
+		int[ptrdiff_t.sizeof == 8 ? 10: 6] __i;
+		shared int[ptrdiff_t.sizeof == 8 ? 10: 6] __vi;
+		shared pthread_t[ptrdiff_t.sizeof == 8 ? 5: 6] __p;
 	}
 }
 
@@ -198,7 +199,7 @@ struct pthread_cond_t {
 	union __u {
 		int[12] __i;
 		shared int[12] __vi;
-		pthread_t[48 / ptrdiff_t.sizeof] __p;
+		pthread_t[48 / (void*).sizeof] __p;
 	}
 }
 
@@ -206,16 +207,16 @@ alias cnd_t = pthread_cond_t;
 
 struct pthread_rwlock_t {
 	union __u {
-		int[14] __i;
-		shared int[14] __vi;
-		pthread_t[7] __p;
+		int[ptrdiff_t.sizeof == 8 ? 14: 8] __i;
+		shared int[ptrdiff_t.sizeof == 8 ? 14: 8] __vi;
+		pthread_t[ptrdiff_t.sizeof == 8 ? 7: 8] __p;
 	}
 }
 
 struct pthread_barrier_t {
 	union __u {
-		int[8] __i;
-		shared int[8] __vi;
-		pthread_t[4] __p;
+		int[ptrdiff_t.sizeof == 8 ? 8: 5] __i;
+		shared int[ptrdiff_t.sizeof == 8 ? 8: 5] __vi;
+		pthread_t[ptrdiff_t.sizeof == 8 ? 4: 5] __p;
 	}
 }
